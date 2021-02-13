@@ -1,0 +1,32 @@
+version: '3'
+
+volumes:
+  wordpress:
+    name: wordpress
+    driver: local
+
+networks:
+  reverse-proxy:
+    external: true
+    driver: bridge
+  mysql:
+    external: true
+    driver: bridge
+
+services:
+  wordpress:
+    image: docker.io/library/wordpress:5.6-php7.4-apache
+    container_name: wordpress
+    restart: unless-stopped
+    expose:
+      - 80
+    environment:
+      - WORDPRESS_DB_HOST=${ENV_DB_HOST}
+      - WORDPRESS_DB_USER=${ENV_DB_USERNAME}
+      - WORDPRESS_DB_PASSWORD=${ENV_DB_PASSWORD}
+      - WORDPRESS_DB_NAME=${ENV_DB_DATABASE}
+    networks:
+      - reverse-proxy
+      - mysql
+    volumes:
+      - wordpress:/var/www/html:rw
